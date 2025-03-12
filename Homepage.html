@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clones Against Everyone</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background-color: #222;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+            width: 300px;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        .input-box {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        input {
+            background-color: #333;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            width: 80%;
+            margin: 0 auto;
+            outline: none;
+        }
+
+        .button {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 20px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            background-color: #555;
+        }
+
+        .start-btn {
+            margin-top: 20px;
+            background-color: #1E90FF;
+            color: white;
+            border-radius: 25px;
+            padding: 12px 25px;
+            cursor: pointer;
+            border: none;
+            width: auto;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .start-btn:hover {
+            background-color: #4682B4;
+        }
+
+        .greeting-message {
+            margin-top: 10px;
+            font-size: 14px;
+            color: white;
+        }
+
+        .user-list {
+            font-size: 14px;
+            margin-top: 20px; /* Ensures spacing below the card */
+            color: white;
+            text-align: center; /* Centers the text */
+            width: 100%; /* Ensures it takes full width */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers elements horizontally */
+        }
+
+        .user-list div {
+            margin-bottom: 10px;
+        }
+
+        .remove-btn {
+            cursor: pointer;
+            color: red;
+            font-weight: bold;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Clones Against Everyone</h2>
+
+        <div class="input-box" id="inputBox">
+            <input type="text" id="userName" placeholder="Enter your name" onkeydown="checkEnter(event)">
+        </div>
+
+        <button class="button" id="submitNameBtn" onclick="submitName()">Submit Name</button>
+
+        <div id="greetingMessage" class="greeting-message" style="display:none;"></div>
+
+        <div id="buttonContainer" style="display:none;">
+            <button class="start-btn" id="startGameBtn" onclick="startGame()">Start Game</button>
+        </div>
+    </div>
+
+    <div id="userWaiting" class="user-list" style="display:none;"></div>
+
+    <script>
+        let userName = '';
+        let userInputs = [];
+
+        function submitName() {
+            userName = document.getElementById("userName").value;
+            if (userName.trim() === '') {
+                alert('Please enter a valid name.');
+                return;
+            }
+
+            document.getElementById("userName").disabled = true;
+            document.getElementById("inputBox").style.display = 'none';
+
+            const greetingMessage = document.getElementById("greetingMessage");
+            greetingMessage.style.display = 'block';
+            greetingMessage.innerHTML = `Hello, ${userName}. Please wait. <span class="remove-btn" onclick="renameUser()">x</span>`;
+
+            document.getElementById("submitNameBtn").style.display = 'none';
+            document.getElementById("buttonContainer").style.display = 'block';
+
+            document.getElementById("userWaiting").style.display = 'block';
+
+            setTimeout(() => {
+                waitForOtherWebsiteInput();
+            }, 2000);
+        }
+
+        function checkEnter(event) {
+            if (event.key === 'Enter') {
+                submitName();
+            }
+        }
+
+        function renameUser() {
+            document.getElementById("greetingMessage").style.display = 'none';
+            document.getElementById("inputBox").style.display = 'block';
+            document.getElementById("userName").disabled = false;
+            document.getElementById("submitNameBtn").style.display = 'inline-block';
+            document.getElementById("userName").focus();
+            document.getElementById("buttonContainer").style.display = 'none';
+            document.getElementById("userWaiting").style.display = 'none';
+        }
+
+        function waitForOtherWebsiteInput() {
+            setTimeout(() => {
+                const newInput = prompt("Enter other user input:");
+                if (newInput && newInput.trim() !== '') {
+                    addUserInput(newInput);
+                }
+            }, 2000);
+        }
+
+        function addUserInput(input) {
+            const inputDiv = document.createElement('div');
+            inputDiv.classList.add('name-button');
+            inputDiv.innerHTML = `${input} <span class="remove-btn" onclick="removeUserInput(this)">x</span>`;
+            document.getElementById("userWaiting").appendChild(inputDiv);
+            userInputs.push(input);
+
+            if (userInputs.length > 0) {
+                document.getElementById("userWaiting").style.display = 'block';
+            }
+        }
+
+        function removeUserInput(button) {
+            const index = Array.from(button.parentElement.children).indexOf(button);
+            if (index > -1) {
+                userInputs.splice(index, 1);
+            }
+            button.parentElement.remove();
+
+            if (userInputs.length === 0) {
+                document.getElementById("userWaiting").style.display = 'none';
+            }
+        }
+
+        function startGame() {
+            alert('Game Started!');
+        }
+    </script>
+</body>
+</html>
